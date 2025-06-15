@@ -1,6 +1,6 @@
 # Study Plan Tracker
 
-A web application to track your learning progress through different phases of algorithm and programming study.
+A web application to track your learning progress through different phases of algorithm study.
 
 ## Features
 
@@ -12,7 +12,7 @@ A web application to track your learning progress through different phases of al
 ## Setup
 
 1. Clone this repository
-2. Open `index.html` in your browser
+2. Open `study_plan.html` in your browser
 3. Start tracking your learning progress!
 
 ## GitHub Pages
@@ -20,6 +20,9 @@ A web application to track your learning progress through different phases of al
 This website is hosted on GitHub Pages. You can access it at:
 https://wenatnyu.github.io/study_plan/
 
-## Contributing
+## Development
 
-Feel free to fork this repository and customize it for your own learning journey! 
+The website consists of:
+- `study_plan.html` - Main webpage
+- `save_data.js` - GitHub API integration for saving progress
+- `study_data.json` - Data storage file (automatically created) 
