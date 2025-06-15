@@ -703,14 +703,8 @@
     <script src="save_data.js"></script>
 
     <script>
-        // 当前数据
-        let currentData = {
-            "homework": Array(7).fill(null),
-            "status": Array(7).fill("pending")
-        };
-
         // Save homework content
-        async function saveHomework(index) {
+        function saveHomework(index) {
             const session = document.querySelectorAll('.session')[index];
             const homeworkInput = session.querySelector('.homework-input');
             const homeworkContent = session.querySelector('.homework-content');
@@ -726,53 +720,39 @@
             // Update current data
             currentData.homework[index] = homeworkData;
             
-            try {
-                // Save to GitHub
-                await saveToGitHub(currentData);
-                
-                // Display saved content
-                homeworkContent.innerHTML = `
-                    <h4>Saved Homework:</h4>
-                    <p>${homeworkInput.value}</p>
-                    ${homeworkData.files.length ? `
-                        <h4>Attached Files:</h4>
-                        <ul>
-                            ${homeworkData.files.map(f => `<li>${f}</li>`).join('')}
-                        </ul>
-                    ` : ''}
-                    <p><small>Last updated: ${new Date(homeworkData.timestamp).toLocaleString()}</small></p>
-                `;
-                homeworkContent.classList.add('show');
-                
-                showToast('Homework saved successfully!');
-            } catch (error) {
-                showToast('Error saving homework: ' + error.message);
-            }
+            // Display saved content
+            homeworkContent.innerHTML = `
+                <h4>Saved Homework:</h4>
+                <p>${homeworkInput.value}</p>
+                ${homeworkData.files.length ? `
+                    <h4>Attached Files:</h4>
+                    <ul>
+                        ${homeworkData.files.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                ` : ''}
+                <p><small>Last updated: ${new Date(homeworkData.timestamp).toLocaleString()}</small></p>
+            `;
+            homeworkContent.classList.add('show');
+            
+            showToast('Homework saved successfully!');
         }
 
         // Mark as completed
-        async function markAsCompleted(index) {
-            try {
-                // Update current data
-                currentData.status[index] = 'completed';
-                
-                // Save to GitHub
-                await saveToGitHub(currentData);
-                
-                const session = document.querySelectorAll('.session')[index];
-                const statusBadge = session.querySelector('.status-badge');
-                const weekDot = document.querySelectorAll('.week-dot')[index];
-                
-                session.classList.add('completed');
-                statusBadge.textContent = 'Completed';
-                statusBadge.classList.remove('pending');
-                statusBadge.classList.add('completed');
-                weekDot.classList.add('completed');
-                
-                showToast('Marked as completed!');
-            } catch (error) {
-                showToast('Error updating status: ' + error.message);
-            }
+        function markAsCompleted(index) {
+            // Update current data
+            currentData.status[index] = 'completed';
+            
+            const session = document.querySelectorAll('.session')[index];
+            const statusBadge = session.querySelector('.status-badge');
+            const weekDot = document.querySelectorAll('.week-dot')[index];
+            
+            session.classList.add('completed');
+            statusBadge.textContent = 'Completed';
+            statusBadge.classList.remove('pending');
+            statusBadge.classList.add('completed');
+            weekDot.classList.add('completed');
+            
+            showToast('Marked as completed!');
         }
 
         // Show toast message
@@ -786,95 +766,41 @@
             }, 3000);
         }
 
-        // Load data
-        async function loadData() {
-            try {
-                // Load from GitHub
-                const data = await loadFromGitHub();
-                currentData = data;
-                
-                // Load homework data
-                if (currentData.homework) {
-                    currentData.homework.forEach((item, index) => {
-                        if (item) {
-                            const session = document.querySelectorAll('.session')[index];
-                            const homeworkInput = session.querySelector('.homework-input');
-                            const homeworkContent = session.querySelector('.homework-content');
-                            
-                            homeworkInput.value = item.text;
-                            homeworkContent.innerHTML = `
-                                <h4>Saved Homework:</h4>
-                                <p>${item.text}</p>
-                                ${item.files.length ? `
-                                    <h4>Attached Files:</h4>
-                                    <ul>
-                                        ${item.files.map(f => `<li>${f}</li>`).join('')}
-                                    </ul>
-                                ` : ''}
-                                <p><small>Last updated: ${new Date(item.timestamp).toLocaleString()}</small></p>
-                            `;
-                            homeworkContent.classList.add('show');
-                        }
-                    });
-                }
-
-                // Load completion status
-                if (currentData.status) {
-                    currentData.status.forEach((status, index) => {
-                        if (status === 'completed') {
-                            const session = document.querySelectorAll('.session')[index];
-                            const statusBadge = session.querySelector('.status-badge');
-                            const weekDot = document.querySelectorAll('.week-dot')[index];
-                            
-                            session.classList.add('completed');
-                            statusBadge.textContent = 'Completed';
-                            statusBadge.classList.remove('pending');
-                            statusBadge.classList.add('completed');
-                            weekDot.classList.add('completed');
-                        }
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading data:', error);
-                showToast('Error loading data: ' + error.message);
-            }
-        }
-
         // Load data when page loads
-        document.addEventListener('DOMContentLoaded', loadData);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Adjust dates
+            function adjustDates(index) {
+                const sessions = document.querySelectorAll('.session');
+                const baseDateInput = sessions[index].querySelector('input[type="datetime-local"]');
+                let baseDate = new Date(baseDateInput.value);
 
-        // Adjust dates
-        function adjustDates(index) {
-            const sessions = document.querySelectorAll('.session');
-            const baseDateInput = sessions[index].querySelector('input[type="datetime-local"]');
-            let baseDate = new Date(baseDateInput.value);
-
-            for (let i = index + 1; i < sessions.length; i++) {
-                baseDate.setDate(baseDate.getDate() + 2);
-                sessions[i].querySelector('input[type="datetime-local"]').value = baseDate.toISOString().slice(0, 16);
+                for (let i = index + 1; i < sessions.length; i++) {
+                    baseDate.setDate(baseDate.getDate() + 2);
+                    sessions[i].querySelector('input[type="datetime-local"]').value = baseDate.toISOString().slice(0, 16);
+                }
             }
-        }
 
-        // Phase navigation interaction
-        document.querySelectorAll('.phase-item').forEach(item => {
-            item.addEventListener('click', () => {
-                // Remove active class from all items
-                document.querySelectorAll('.phase-item').forEach(i => i.classList.remove('active'));
-                document.querySelectorAll('.phase-content').forEach(c => c.classList.remove('active'));
-                
-                // Add active class to current item
-                item.classList.add('active');
-                const phaseId = item.getAttribute('data-phase');
-                document.getElementById(`phase-${phaseId}`).classList.add('active');
+            // Phase navigation interaction
+            document.querySelectorAll('.phase-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    // Remove active class from all items
+                    document.querySelectorAll('.phase-item').forEach(i => i.classList.remove('active'));
+                    document.querySelectorAll('.phase-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to current item
+                    item.classList.add('active');
+                    const phaseId = item.getAttribute('data-phase');
+                    document.getElementById(`phase-${phaseId}`).classList.add('active');
+                });
             });
-        });
 
-        // Week navigation interaction
-        document.querySelectorAll('.week-dot').forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                document.querySelectorAll('.week-dot').forEach(d => d.classList.remove('active'));
-                dot.classList.add('active');
-                document.querySelectorAll('.session')[index].scrollIntoView({ behavior: 'smooth' });
+            // Week navigation interaction
+            document.querySelectorAll('.week-dot').forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    document.querySelectorAll('.week-dot').forEach(d => d.classList.remove('active'));
+                    dot.classList.add('active');
+                    document.querySelectorAll('.session')[index].scrollIntoView({ behavior: 'smooth' });
+                });
             });
         });
     </script>
