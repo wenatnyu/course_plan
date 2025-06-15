@@ -1,8 +1,5 @@
-// GitHub API 配置
-const GITHUB_TOKEN = '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'; // 请填入您的 GitHub Personal Access Token
-const REPO_OWNER = 'wenatnyu'; // 需要填入您的 GitHub 用户名
-const REPO_NAME = 'study_plan'; // 需要填入您的仓库名
-const FILE_PATH = 'study_data.json'; // 数据文件路径
+// 数据管理配置
+const FILE_NAME = 'study_data.json';
 
 // 初始数据
 const initialData = {
@@ -10,85 +7,142 @@ const initialData = {
     "status": Array(7).fill("pending")
 };
 
-// 保存数据到 GitHub
-async function saveToGitHub(data) {
+// 保存数据到本地文件
+function saveToFile(data) {
     try {
-        // 获取当前文件内容
-        const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
-            headers: {
-                'Authorization': `token ${GITHUB_TOKEN}`,
-                'Accept': 'application/vnd.github.v3+json'
-            }
-        });
+        const jsonString = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
         
-        let fileData;
-        if (response.status === 404) {
-            // 文件不存在，创建新文件
-            fileData = { sha: null };
-        } else if (!response.ok) {
-            throw new Error(`Failed to get file: ${response.statusText}`);
-        } else {
-            fileData = await response.json();
-        }
+        // 创建下载链接
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = FILE_NAME;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
         
-        // 更新内容
-        const newContent = JSON.stringify(data, null, 2);
-        const base64Content = btoa(unescape(encodeURIComponent(newContent)));
-        
-        // 提交更新
-        const updateResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `token ${GITHUB_TOKEN}`,
-                'Accept': 'application/vnd.github.v3+json'
-            },
-            body: JSON.stringify({
-                message: 'Update study data',
-                content: base64Content,
-                sha: fileData.sha
-            })
-        });
-        
-        if (!updateResponse.ok) {
-            const error = await updateResponse.json();
-            throw new Error(`Failed to save data: ${error.message}`);
-        }
-        
-        const result = await updateResponse.json();
-        return result;
+        console.log('Data saved successfully. Please update the JSON file manually.');
+        return true;
     } catch (error) {
-        console.error('Error saving to GitHub:', error);
-        throw error;
+        console.error('Error saving data:', error);
+        return false;
     }
 }
 
-// 从 GitHub 加载数据
-async function loadFromGitHub() {
-    try {
-        const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
-            headers: {
-                'Authorization': `token ${GITHUB_TOKEN}`,
-                'Accept': 'application/vnd.github.v3+json'
+// 从本地文件加载数据
+function loadFromFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        
+        reader.onload = (event) => {
+            try {
+                const data = JSON.parse(event.target.result);
+                resolve(data);
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+                reject(error);
             }
-        });
+        };
         
-        if (response.status === 404) {
-            // 文件不存在，创建新文件并返回初始数据
-            await saveToGitHub(initialData);
-            return initialData;
-        }
+        reader.onerror = (error) => {
+            console.error('Error reading file:', error);
+            reject(error);
+        };
         
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(`Failed to load data: ${error.message}`);
-        }
-        
-        const fileData = await response.json();
-        const content = decodeURIComponent(escape(atob(fileData.content)));
-        return JSON.parse(content);
-    } catch (error) {
-        console.error('Error loading from GitHub:', error);
-        // 如果加载失败，返回初始数据
-        return initialData;
+        reader.readAsText(file);
+    });
+}
+
+// 处理文件上传
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        loadFromFile(file)
+            .then(data => {
+                // 更新页面数据
+                updatePageData(data);
+                console.log('Data loaded successfully');
+            })
+            .catch(error => {
+                console.error('Failed to load data:', error);
+                alert('Failed to load data. Please check the file format.');
+            });
     }
-} 
+}
+
+// 更新页面数据
+function updatePageData(data) {
+    // 更新作业内容
+    data.homework.forEach((item, index) => {
+        if (item) {
+            const textarea = document.querySelector(`#homework-${index}`);
+            if (textarea) {
+                textarea.value = item.text || '';
+            }
+        }
+    });
+    
+    // 更新状态
+    data.status.forEach((status, index) => {
+        const session = document.querySelector(`#session-${index}`);
+        if (session) {
+            session.dataset.status = status;
+            updateStatusDisplay(session);
+        }
+    });
+}
+
+// 导出当前数据
+function exportCurrentData() {
+    const data = {
+        homework: Array(7).fill(null),
+        status: Array(7).fill("pending")
+    };
+    
+    // 收集作业内容
+    for (let i = 0; i < 7; i++) {
+        const textarea = document.querySelector(`#homework-${i}`);
+        const session = document.querySelector(`#session-${i}`);
+        if (textarea && session) {
+            data.homework[i] = {
+                text: textarea.value,
+                timestamp: new Date().toISOString()
+            };
+            data.status[i] = session.dataset.status;
+        }
+    }
+    
+    saveToFile(data);
+}
+
+// 添加文件上传监听器
+document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.json';
+    fileInput.style.display = 'none';
+    fileInput.addEventListener('change', handleFileUpload);
+    document.body.appendChild(fileInput);
+    
+    // 添加导入按钮
+    const importButton = document.createElement('button');
+    importButton.textContent = 'Import Data';
+    importButton.onclick = () => fileInput.click();
+    importButton.style.position = 'fixed';
+    importButton.style.bottom = '20px';
+    importButton.style.right = '20px';
+    importButton.style.zIndex = '1000';
+    document.body.appendChild(importButton);
+    
+    // 添加导出按钮
+    const exportButton = document.createElement('button');
+    exportButton.textContent = 'Export Data';
+    exportButton.onclick = exportCurrentData;
+    exportButton.style.position = 'fixed';
+    exportButton.style.bottom = '20px';
+    exportButton.style.right = '120px';
+    exportButton.style.zIndex = '1000';
+    document.body.appendChild(exportButton);
+}); 
