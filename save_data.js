@@ -2,7 +2,7 @@
 const GITHUB_TOKEN = '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'; // 需要填入您的 GitHub Personal Access Token
 const REPO_OWNER = 'wenatnyu'; // 需要填入您的 GitHub 用户名
 const REPO_NAME = 'study_plan'; // 需要填入您的仓库名
-const FILE_PATH = 'study_data.json'; // 数据文件路径
+const FILE_PATH = 'data.json'; // 数据文件路径
 
 // 初始数据
 const initialData = {
