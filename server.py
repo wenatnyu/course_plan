@@ -14,6 +14,34 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
+    def do_POST(self):
+        """Handle POST requests for updating study_data.json"""
+        if self.path == '/update_data':
+            try:
+                # Get the content length
+                content_length = int(self.headers['Content-Length'])
+                # Read the POST data
+                post_data = self.rfile.read(content_length)
+                # Parse the JSON data
+                data = json.loads(post_data.decode('utf-8'))
+                
+                # Write the data to study_data.json
+                with open('study_data.json', 'w', encoding='utf-8') as f:
+                    json.dump(data, f, indent=2)
+                
+                # Send success response
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({'status': 'success'}).encode())
+                print('Successfully updated study_data.json')
+                
+            except Exception as e:
+                print(f"Error updating study_data.json: {str(e)}")
+                self.send_error(500, f"Error updating file: {str(e)}")
+        else:
+            self.send_error(404, "Not found")
+
     def guess_type(self, path):
         """Override to set correct content type for JSON files"""
         if path.endswith('.json'):

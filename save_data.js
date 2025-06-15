@@ -1,5 +1,5 @@
 // 数据管理配置
-const STORAGE_KEY = 'study_data';
+const FILE_NAME = 'study_data.json';
 
 // 初始数据
 const initialData = {
@@ -42,54 +42,72 @@ function showToast(message) {
     }
 }
 
-// Load data from localStorage
-function loadData() {
-    console.log('Loading data from localStorage...');
-    try {
-        const savedData = localStorage.getItem(STORAGE_KEY);
-        if (savedData) {
-            const data = JSON.parse(savedData);
-            console.log('Loaded data:', data);
-            
-            if (data && typeof data === 'object') {
-                // Ensure data has the correct structure
-                if (!data.homework || !data.status) {
-                    console.error('Invalid data structure:', data);
-                    throw new Error('Invalid data structure');
-                }
+// Load data from study_data.json
+function loadFromJsonFile() {
+    console.log('Attempting to load data from:', FILE_NAME);
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', FILE_NAME, true);
+    
+    xhr.onload = function() {
+        console.log('XHR response status:', xhr.status);
+        console.log('XHR response type:', xhr.getResponseHeader('Content-Type'));
+        
+        if (xhr.status === 200) {
+            try {
+                console.log('Raw response:', xhr.responseText);
+                const data = JSON.parse(xhr.responseText);
+                console.log('Parsed data:', data);
                 
-                currentData = data;
-                updatePageData(data);
-                console.log('Data loaded and updated successfully');
-                showToast('Data loaded successfully!');
-            } else {
-                throw new Error('Invalid data format');
+                if (data && typeof data === 'object') {
+                    // Ensure data has the correct structure
+                    if (!data.homework || !data.status) {
+                        console.error('Invalid data structure:', data);
+                        throw new Error('Invalid data structure');
+                    }
+                    
+                    // Convert string homework items to objects if needed
+                    data.homework = data.homework.map(item => {
+                        if (typeof item === 'string') {
+                            return {
+                                text: item,
+                                timestamp: new Date().toISOString()
+                            };
+                        }
+                        return item;
+                    });
+                    
+                    console.log('Processed data:', data);
+                    currentData = data;
+                    updatePageData(data);
+                    console.log('Data loaded and updated successfully');
+                    showToast('Data loaded successfully!');
+                } else {
+                    console.error('Invalid data format:', data);
+                    throw new Error('Invalid data format');
+                }
+            } catch (error) {
+                console.error('Error parsing data:', error);
+                currentData = initialData;
+                updatePageData(initialData);
+                showToast('Error loading data, using initial data');
             }
         } else {
-            console.log('No saved data found, using initial data');
+            console.error('Failed to load data, status:', xhr.status);
             currentData = initialData;
             updatePageData(initialData);
+            showToast('Failed to load data, using initial data');
         }
-    } catch (error) {
-        console.error('Error loading data:', error);
+    };
+    
+    xhr.onerror = function(error) {
+        console.error('XHR error:', error);
         currentData = initialData;
         updatePageData(initialData);
         showToast('Error loading data, using initial data');
-    }
-}
-
-// Save data to localStorage
-function saveData(data) {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        console.log('Data saved to localStorage:', data);
-        showToast('Data saved successfully!');
-        return true;
-    } catch (error) {
-        console.error('Error saving data:', error);
-        showToast('Error saving data!');
-        return false;
-    }
+    };
+    
+    xhr.send();
 }
 
 // 保存数据到本地文件
@@ -102,7 +120,7 @@ function saveToFile(data) {
         // 创建下载链接
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'study_data.json';
+        link.download = FILE_NAME;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -110,11 +128,13 @@ function saveToFile(data) {
         
         // 更新当前数据
         currentData = data;
-        saveData(data); // Also save to localStorage
-        console.log('Data saved successfully. File downloaded.');
+        console.log('Data saved successfully. Please update the currentData in save_data.js with the following content:');
+        console.log(jsonString);
+        showToast('Data saved successfully!');
         return true;
     } catch (error) {
         console.error('Error saving data:', error);
+        showToast('Error saving data!');
         return false;
     }
 }
@@ -143,6 +163,13 @@ function loadFromFile(file) {
     });
 }
 
+// 验证密码
+function verifyPassword() {
+    const DEFAULT_PASSWORD = '1';
+    const password = prompt('Please enter password to import data:');
+    return password === DEFAULT_PASSWORD;
+}
+
 // 处理文件上传
 function handleFileUpload(event) {
     const file = event.target.files[0];
@@ -151,15 +178,30 @@ function handleFileUpload(event) {
             .then(data => {
                 // 更新当前数据
                 currentData = data;
-                // 保存到 localStorage
-                saveData(data);
-                // 更新页面
-                updatePageData(data);
-                showToast('Data imported successfully!');
+                // 更新服务器上的文件
+                return fetch('/update_data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data, null, 2)
+                });
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    showToast('Data imported successfully! Reloading page...');
+                    // 重新加载页面
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000); // 等待1秒后重新加载，让用户看到成功消息
+                } else {
+                    throw new Error('Server update failed');
+                }
             })
             .catch(error => {
-                console.error('Failed to load data:', error);
-                alert('Failed to load data. Please check the file format.');
+                console.error('Failed to import data:', error);
+                showToast('Failed to import data. Please check the file format.');
             });
     }
 }
@@ -213,93 +255,84 @@ function updatePageData(data) {
     });
 }
 
-// Save homework content
-function saveHomework(index) {
-    const session = document.querySelectorAll('.session')[index];
-    const homeworkInput = session.querySelector('.homework-input');
-    const homeworkContent = session.querySelector('.homework-content');
-    const fileInput = session.querySelector('.file-input');
-    
-    // Prepare homework data
-    const homeworkData = {
-        text: homeworkInput.value,
-        files: fileInput.files ? Array.from(fileInput.files).map(f => f.name) : [],
-        timestamp: new Date().toISOString()
-    };
-    
-    // Update current data
-    currentData.homework[index] = homeworkData;
-    
-    // Save to localStorage
-    saveData(currentData);
-    
-    // Display saved content
-    homeworkContent.innerHTML = `
-        <h4>Saved Homework:</h4>
-        <p>${homeworkInput.value}</p>
-        ${homeworkData.files.length ? `
-            <h4>Attached Files:</h4>
-            <ul>
-                ${homeworkData.files.map(f => `<li>${f}</li>`).join('')}
-            </ul>
-        ` : ''}
-        <p><small>Last updated: ${new Date(homeworkData.timestamp).toLocaleString()}</small></p>
-    `;
-    homeworkContent.classList.add('show');
-    
-    showToast('Homework saved successfully!');
-}
-
-// Mark as completed
-function markAsCompleted(index) {
-    // Update current data
-    currentData.status[index] = 'completed';
-    
-    // Save to localStorage
-    saveData(currentData);
-    
-    const session = document.querySelectorAll('.session')[index];
-    const statusBadge = session.querySelector('.status-badge');
-    const weekDot = document.querySelectorAll('.week-dot')[index];
-    
-    session.classList.add('completed');
-    statusBadge.textContent = 'Completed';
-    statusBadge.classList.remove('pending');
-    statusBadge.classList.add('completed');
-    weekDot.classList.add('completed');
-    
-    showToast('Marked as completed!');
-}
-
 // 导出当前数据
 function exportCurrentData() {
+    console.log('Exporting current data...');
+    
     const data = {
         homework: Array(7).fill(null),
         status: Array(7).fill("pending")
     };
     
     // 收集作业内容
-    for (let i = 0; i < 7; i++) {
-        const textarea = document.querySelector(`#homework-${i}`);
-        const session = document.querySelectorAll('.session')[i];
-        if (textarea && session) {
-            data.homework[i] = {
+    document.querySelectorAll('.session').forEach((session, index) => {
+        const textarea = session.querySelector('.homework-input');
+        const statusBadge = session.querySelector('.status-badge');
+        
+        if (textarea) {
+            data.homework[index] = {
                 text: textarea.value,
                 timestamp: new Date().toISOString()
             };
-            data.status[i] = session.dataset.status;
         }
-    }
+        
+        if (statusBadge) {
+            data.status[index] = statusBadge.textContent.toLowerCase();
+        }
+    });
+    
+    console.log('Collected data for export:', data);
     
     // 保存到文件并下载
-    saveToFile(data);
+    try {
+        const jsonString = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        // 创建下载链接
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = FILE_NAME;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        // 更新服务器上的文件
+        fetch('/update_data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: jsonString
+        })
+        .then(response => response.json())
+        .then(result => {
+            console.log('Server update result:', result);
+            if (result.status === 'success') {
+                // 更新当前数据
+                currentData = data;
+                console.log('Data exported and server updated successfully:', data);
+                showToast('Data exported and saved successfully!');
+            } else {
+                throw new Error('Server update failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating server:', error);
+            showToast('Error updating server, but file was downloaded!');
+        });
+    } catch (error) {
+        console.error('Error exporting data:', error);
+        showToast('Error exporting data!');
+    }
 }
 
 // 添加文件上传监听器
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Page loaded, loading data...');
-    // Load data from localStorage
-    loadData();
+    // Load data from study_data.json
+    loadFromJsonFile();
 
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -311,7 +344,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // 添加导入按钮
     const importButton = document.createElement('button');
     importButton.textContent = 'Import Data';
-    importButton.onclick = () => fileInput.click();
+    importButton.onclick = () => {
+        // 先验证密码
+        if (verifyPassword()) {
+            fileInput.click();
+        } else {
+            showToast('Incorrect password!');
+        }
+    };
     importButton.style.position = 'fixed';
     importButton.style.bottom = '20px';
     importButton.style.right = '20px';
