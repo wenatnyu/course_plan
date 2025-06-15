@@ -4,7 +4,8 @@ const FILE_NAME = 'study_data.json';
 // 初始数据
 const initialData = {
     "homework": Array(7).fill(null),
-    "status": Array(7).fill("pending")
+    "status": Array(7).fill("pending"),
+    "dates": Array(7).fill(null)
 };
 
 // 当前数据
@@ -26,6 +27,15 @@ let currentData = {
         "pending",
         "pending",
         "pending"
+    ],
+    "dates": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
     ]
 };
 
@@ -60,13 +70,18 @@ function loadFromJsonFile() {
                 console.log('Parsed data:', data);
                 
                 if (data && typeof data === 'object') {
-                    // Ensure data has the correct structure
+                    // 确保数据有正确的结构
                     if (!data.homework || !data.status) {
                         console.error('Invalid data structure:', data);
                         throw new Error('Invalid data structure');
                     }
                     
-                    // Convert string homework items to objects if needed
+                    // 如果缺少dates字段，添加它
+                    if (!data.dates) {
+                        data.dates = Array(7).fill(null);
+                    }
+                    
+                    // 转换字符串作业项为对象（如果需要）
                     data.homework = data.homework.map(item => {
                         if (typeof item === 'string') {
                             return {
@@ -206,6 +221,107 @@ function handleFileUpload(event) {
     }
 }
 
+// 调整日期
+function adjustDates(changedIndex) {
+    console.log('Adjusting dates starting from index:', changedIndex);
+    const sessions = document.querySelectorAll('.session');
+    
+    // 检查修改的日期是否有效
+    const changedDateInput = sessions[changedIndex]?.querySelector('input[type="datetime-local"]');
+    if (!changedDateInput || !changedDateInput.value) {
+        console.error('Invalid date input at index:', changedIndex);
+        return;
+    }
+    
+    const changedDate = new Date(changedDateInput.value);
+    if (isNaN(changedDate.getTime())) {
+        console.error('Invalid date value:', changedDateInput.value);
+        return;
+    }
+
+    // 计算原始日期间隔（基于初始数据）
+    const originalIntervals = [];
+    for (let i = 1; i < sessions.length; i++) {
+        const prevDate = new Date(sessions[i-1].querySelector('input[type="datetime-local"]').value);
+        const currDate = new Date(sessions[i].querySelector('input[type="datetime-local"]').value);
+        if (prevDate && currDate && !isNaN(prevDate.getTime()) && !isNaN(currDate.getTime())) {
+            const daysDiff = Math.floor((currDate - prevDate) / (1000 * 60 * 60 * 24));
+            originalIntervals.push(daysDiff);
+        }
+    }
+    console.log('Original intervals:', originalIntervals);
+    
+    // 从修改的课程开始，更新后续所有课程的日期
+    let currentDate = new Date(changedDate);
+    let lastValidDate = new Date(changedDate);
+    
+    // 更新后续日期
+    for (let i = changedIndex + 1; i < sessions.length; i++) {
+        const currentSession = sessions[i];
+        if (!currentSession) {
+            console.error('Missing session element at index:', i);
+            continue;
+        }
+        
+        const currentDateInput = currentSession.querySelector('input[type="datetime-local"]');
+        if (!currentDateInput) {
+            console.error('Missing date input at index:', i);
+            continue;
+        }
+        
+        // 使用原始间隔计算新日期
+        const interval = originalIntervals[i-1] || 7; // 如果没有原始间隔，默认使用7天
+        currentDate = new Date(lastValidDate);
+        currentDate.setDate(currentDate.getDate() + interval);
+        
+        // 确保新日期大于前一个日期
+        if (currentDate <= lastValidDate) {
+            currentDate = new Date(lastValidDate);
+            currentDate.setDate(currentDate.getDate() + 1); // 至少加一天
+        }
+        
+        // 保持原始时间
+        const originalTime = currentDateInput.value.split('T')[1];
+        
+        // 更新日期输入框，保持原始时间
+        const newDateStr = currentDate.toISOString().split('T')[0] + 'T' + originalTime;
+        currentDateInput.value = newDateStr;
+        
+        // 更新当前数据中的日期
+        currentData.dates[i] = newDateStr;
+        
+        // 更新最后有效日期
+        lastValidDate = new Date(currentDate);
+        
+        console.log(`Updated date for session ${i} to:`, newDateStr, `(interval: ${interval} days)`);
+    }
+    
+    // 更新当前数据中的修改日期
+    currentData.dates[changedIndex] = changedDateInput.value;
+}
+
+// 添加日期变更监听器
+function addDateChangeListeners() {
+    document.querySelectorAll('input[type="datetime-local"]').forEach((dateInput, index) => {
+        if (!dateInput) {
+            console.error('Missing date input at index:', index);
+            return;
+        }
+        
+        dateInput.addEventListener('change', () => {
+            if (!dateInput.value) {
+                console.error('Empty date value at index:', index);
+                return;
+            }
+            
+            // 更新当前数据中的日期
+            currentData.dates[index] = dateInput.value;
+            // 调整后续日期
+            adjustDates(index);
+        });
+    });
+}
+
 // 更新页面数据
 function updatePageData(data) {
     console.log('Updating page with data:', data);
@@ -253,6 +369,22 @@ function updatePageData(data) {
             }
         }
     });
+
+    // 更新日期
+    if (data.dates) {
+        data.dates.forEach((date, index) => {
+            const session = document.querySelectorAll('.session')[index];
+            if (session && date) {
+                const dateInput = session.querySelector('input[type="datetime-local"]');
+                if (dateInput) {
+                    dateInput.value = date;
+                }
+            }
+        });
+    }
+
+    // 添加日期变更监听器
+    addDateChangeListeners();
 }
 
 // 导出当前数据
@@ -261,13 +393,15 @@ function exportCurrentData() {
     
     const data = {
         homework: Array(7).fill(null),
-        status: Array(7).fill("pending")
+        status: Array(7).fill("pending"),
+        dates: Array(7).fill(null)
     };
     
-    // 收集作业内容
+    // 收集作业内容、状态和日期
     document.querySelectorAll('.session').forEach((session, index) => {
         const textarea = session.querySelector('.homework-input');
         const statusBadge = session.querySelector('.status-badge');
+        const dateInput = session.querySelector('input[type="datetime-local"]');
         
         if (textarea) {
             data.homework[index] = {
@@ -278,6 +412,12 @@ function exportCurrentData() {
         
         if (statusBadge) {
             data.status[index] = statusBadge.textContent.toLowerCase();
+        }
+
+        if (dateInput) {
+            data.dates[index] = dateInput.value;
+            // 确保当前数据中的日期也是最新的
+            currentData.dates[index] = dateInput.value;
         }
     });
     

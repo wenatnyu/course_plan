@@ -1,20 +1,50 @@
 {
-    "homework": [
-        "null",
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-    ],
-    "status": [
-        "pending",
-        "pending",
-        "pending",
-        "pending",
-        "pending",
-        "pending",
-        "pending"
-    ]
-} 
+  "homework": [
+    {
+      "text": "",
+      "timestamp": ""
+    },
+    {
+      "text": "",
+      "timestamp": ""
+    },
+    {
+      "text": "",
+      "timestamp": ""
+    },
+    {
+      "text": "",
+      "timestamp": ""
+    },
+    {
+      "text": "",
+      "timestamp": ""
+    },
+    {
+      "text": "",
+      "timestamp": ""
+    },
+    {
+      "text": "",
+      "timestamp": ""
+    }
+  ],
+  "status": [
+    "pending",
+    "pending",
+    "pending",
+    "pending",
+    "pending",
+    "pending",
+    "pending"
+  ],
+  "dates": [
+    "2025-06-18T16:00",
+    "2025-06-25T16:00",
+    "2025-07-02T16:00",
+    "2025-06-09T00:00",
+    "2025-07-16T16:00",
+    "2025-07-23T16:00",
+    "2025-07-30T16:00"
+  ]
+}
