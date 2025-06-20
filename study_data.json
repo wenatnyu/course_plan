@@ -1,36 +1,36 @@
 {
   "homework": [
     {
-      "text": "",
-      "timestamp": ""
+      "text": "Content:\n1. Time and space complexity\n2. Vector: https://cplusplus.com/reference/vector/vector/?kw=vector\npush_back/pop_back/back/front/begin/end/resize, etc.\n\nHomework:\n1. https://www.hackerrank.com/challenges/variable-sized-arrays/problem?isFullScreen=true\n2. https://cses.fi/c1hw9kf62/task/1069\n3. https://cses.fi/c1hw9kf62/task/1070\n4. https://cses.fi/c1hw9kf62/task/1071\n5. https://cses.fi/c1hw9kf62/task/1092",
+      "timestamp": "2025-06-20T12:18:19.746Z"
     },
     {
       "text": "",
-      "timestamp": ""
+      "timestamp": "2025-06-20T12:18:19.746Z"
     },
     {
       "text": "",
-      "timestamp": ""
+      "timestamp": "2025-06-20T12:18:19.746Z"
     },
     {
       "text": "",
-      "timestamp": ""
+      "timestamp": "2025-06-20T12:18:19.746Z"
     },
     {
       "text": "",
-      "timestamp": ""
+      "timestamp": "2025-06-20T12:18:19.746Z"
     },
     {
       "text": "",
-      "timestamp": ""
+      "timestamp": "2025-06-20T12:18:19.746Z"
     },
     {
       "text": "",
-      "timestamp": ""
+      "timestamp": "2025-06-20T12:18:19.746Z"
     }
   ],
   "status": [
-    "pending",
+    "completed",
     "pending",
     "pending",
     "pending",
@@ -39,12 +39,12 @@
     "pending"
   ],
   "dates": [
-    "2025-06-18T16:00",
+    "2025-06-20T16:00",
     "2025-06-25T16:00",
     "2025-07-02T16:00",
-    "2025-06-09T00:00",
-    "2025-07-16T16:00",
-    "2025-07-23T16:00",
-    "2025-07-30T16:00"
+    "2025-07-07T00:00",
+    "2025-08-13T16:00",
+    "2025-08-20T16:00",
+    "2025-08-27T16:00"
   ]
 }
