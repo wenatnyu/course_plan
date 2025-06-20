@@ -814,6 +814,14 @@
                 });
             });
         });
+
+        // 强制清除缓存并重新加载页面（仅在首次打开时）
+        (function() {
+            if (!window.location.hash.includes('#reloaded')) {
+                window.location.hash = '#reloaded';
+                window.location.reload(true);
+            }
+        })();
     </script>
 </body>
 </html>
