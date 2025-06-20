@@ -322,6 +322,17 @@ function addDateChangeListeners() {
     });
 }
 
+// Helper: Convert URLs to clickable links and preserve line breaks
+function formatTextWithLinks(text) {
+    if (!text) return '';
+    // Convert URLs to links
+    const urlRegex = /(https?:\/\/[\w\-\.\/?#&=;%+~:@!$'()*\[\],]+)/g;
+    let html = text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
+    // Convert newlines to <br>
+    html = html.replace(/\n/g, '<br>');
+    return html;
+}
+
 // 更新页面数据
 function updatePageData(data) {
     console.log('Updating page with data:', data);
@@ -342,7 +353,7 @@ function updatePageData(data) {
                 if (homeworkContent) {
                     homeworkContent.innerHTML = `
                         <h4>Saved Homework:</h4>
-                        <p>${textarea.value}</p>
+                        <div>${formatTextWithLinks(textarea.value)}</div>
                         <p><small>Last updated: ${new Date().toISOString()}</small></p>
                     `;
                     homeworkContent.classList.add('show');

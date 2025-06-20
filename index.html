@@ -703,6 +703,17 @@
     <script src="save_data.js"></script>
 
     <script>
+        // Helper: Convert URLs to clickable links and preserve line breaks
+        function formatTextWithLinks(text) {
+            if (!text) return '';
+            // Convert URLs to links
+            const urlRegex = /(https?:\/\/[\w\-\.\/?#&=;%+~:@!$'()*\[\],]+)/g;
+            let html = text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
+            // Convert newlines to <br>
+            html = html.replace(/\n/g, '<br>');
+            return html;
+        }
+
         // Save homework content
         function saveHomework(index) {
             const session = document.querySelectorAll('.session')[index];
@@ -723,7 +734,7 @@
             // Display saved content
             homeworkContent.innerHTML = `
                 <h4>Saved Homework:</h4>
-                <p>${homeworkInput.value}</p>
+                <div>${formatTextWithLinks(homeworkInput.value)}</div>
                 ${homeworkData.files.length ? `
                     <h4>Attached Files:</h4>
                     <ul>
