@@ -2,36 +2,36 @@
   "homework": [
     {
       "text": "Content:\n1. Time and space complexity\n2. Vector: https://cplusplus.com/reference/vector/vector/?kw=vector\npush_back/pop_back/back/front/begin/end/resize, etc.\n\nHomework:\n1. https://www.hackerrank.com/challenges/variable-sized-arrays/problem?isFullScreen=true\n2. https://cses.fi/c1hw9kf62/task/1069\n3. https://cses.fi/c1hw9kf62/task/1070\n4. https://cses.fi/c1hw9kf62/task/1071\n5. https://cses.fi/c1hw9kf62/task/1092",
-      "timestamp": "2025-06-20T12:18:19.746Z"
+      "timestamp": "2025-07-01T10:24:45.587Z"
+    },
+    {
+      "text": "Content:\n1. data structures: vector, stack, queue, priority queue, deque\n2. upper_bound/lower_bound: https://cplusplus.com/reference/algorithm/lower_bound/\nNext:\nset/map\n\nHomework:\nvector: \n1. https://www.hackerrank.com/challenges/vector-sort/problem?isFullScreen=true\n2. https://www.hackerrank.com/challenges/vector-erase/problem?isFullScreen=true\nsearch:\n1. https://www.hackerrank.com/challenges/cpp-lower-bound/problem?isFullScreen=true\ndeque:\n1. https://www.hackerrank.com/challenges/deque-stl/problem?isFullScreen=true\ncses:\n1. https://cses.fi/problemset/task/1621\n2. https://cses.fi/problemset/task/1091/\n",
+      "timestamp": "2025-07-01T10:24:45.587Z"
     },
     {
       "text": "",
-      "timestamp": "2025-06-20T12:18:19.746Z"
+      "timestamp": "2025-07-01T10:24:45.587Z"
     },
     {
       "text": "",
-      "timestamp": "2025-06-20T12:18:19.746Z"
+      "timestamp": "2025-07-01T10:24:45.587Z"
     },
     {
       "text": "",
-      "timestamp": "2025-06-20T12:18:19.746Z"
+      "timestamp": "2025-07-01T10:24:45.587Z"
     },
     {
       "text": "",
-      "timestamp": "2025-06-20T12:18:19.746Z"
+      "timestamp": "2025-07-01T10:24:45.587Z"
     },
     {
       "text": "",
-      "timestamp": "2025-06-20T12:18:19.746Z"
-    },
-    {
-      "text": "",
-      "timestamp": "2025-06-20T12:18:19.746Z"
+      "timestamp": "2025-07-01T10:24:45.587Z"
     }
   ],
   "status": [
     "completed",
-    "pending",
+    "completed",
     "pending",
     "pending",
     "pending",
@@ -40,11 +40,11 @@
   ],
   "dates": [
     "2025-06-20T16:00",
-    "2025-06-25T16:00",
-    "2025-07-02T16:00",
-    "2025-07-07T00:00",
-    "2025-08-13T16:00",
-    "2025-08-20T16:00",
-    "2025-08-27T16:00"
+    "2025-06-27T22:00",
+    "2025-06-30T16:00",
+    "2025-07-03T00:00",
+    "2025-08-09T16:00",
+    "2025-08-16T16:00",
+    "2025-08-23T16:00"
   ]
 }
