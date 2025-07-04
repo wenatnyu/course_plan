@@ -2,37 +2,37 @@
   "homework": [
     {
       "text": "Content:\n1. Time and space complexity\n2. Vector: https://cplusplus.com/reference/vector/vector/?kw=vector\npush_back/pop_back/back/front/begin/end/resize, etc.\n\nHomework:\n1. https://www.hackerrank.com/challenges/variable-sized-arrays/problem?isFullScreen=true\n2. https://cses.fi/c1hw9kf62/task/1069\n3. https://cses.fi/c1hw9kf62/task/1070\n4. https://cses.fi/c1hw9kf62/task/1071\n5. https://cses.fi/c1hw9kf62/task/1092",
-      "timestamp": "2025-07-01T10:24:45.587Z"
+      "timestamp": "2025-07-03T21:13:20.336Z"
     },
     {
       "text": "Content:\n1. data structures: vector, stack, queue, priority queue, deque\n2. upper_bound/lower_bound: https://cplusplus.com/reference/algorithm/lower_bound/\nNext:\nset/map\n\nHomework:\nvector: \n1. https://www.hackerrank.com/challenges/vector-sort/problem?isFullScreen=true\n2. https://www.hackerrank.com/challenges/vector-erase/problem?isFullScreen=true\nsearch:\n1. https://www.hackerrank.com/challenges/cpp-lower-bound/problem?isFullScreen=true\ndeque:\n1. https://www.hackerrank.com/challenges/deque-stl/problem?isFullScreen=true\ncses:\n1. https://cses.fi/problemset/task/1621\n2. https://cses.fi/problemset/task/1091/\n",
-      "timestamp": "2025-07-01T10:24:45.587Z"
+      "timestamp": "2025-07-03T21:13:20.336Z"
+    },
+    {
+      "text": "Content:\n1. set, map, multiset, multimap, unordered...\n2. find, count, upper_bound/lower_bound\n3. struct\n\nNext:\noperator overload, struct comparison...\nrecursion...\n\nHomework:\nstruct:\nhttps://www.hackerrank.com/challenges/c-tutorial-struct/problem?isFullScreen=true\nset:\nhttps://www.hackerrank.com/challenges/cpp-sets/problem?isFullScreen=true\nmap:\nhttps://www.hackerrank.com/challenges/cpp-maps/problem?isFullScreen=true\ncses:\n0. https://cses.fi/problemset/task/1091\n1. https://cses.fi/problemset/task/1617\n2. https://cses.fi/problemset/task/1618\n3. https://cses.fi/problemset/task/1755\n4. https://cses.fi/problemset/task/1090\n*5. https://cses.fi/problemset/task/2205\n\n",
+      "timestamp": "2025-07-03T21:13:20.336Z"
     },
     {
       "text": "",
-      "timestamp": "2025-07-01T10:24:45.587Z"
+      "timestamp": "2025-07-03T21:13:20.336Z"
     },
     {
       "text": "",
-      "timestamp": "2025-07-01T10:24:45.587Z"
+      "timestamp": "2025-07-03T21:13:20.336Z"
     },
     {
       "text": "",
-      "timestamp": "2025-07-01T10:24:45.587Z"
+      "timestamp": "2025-07-03T21:13:20.336Z"
     },
     {
       "text": "",
-      "timestamp": "2025-07-01T10:24:45.587Z"
-    },
-    {
-      "text": "",
-      "timestamp": "2025-07-01T10:24:45.587Z"
+      "timestamp": "2025-07-03T21:13:20.336Z"
     }
   ],
   "status": [
     "completed",
     "completed",
-    "pending",
+    "completed",
     "pending",
     "pending",
     "pending",
@@ -41,10 +41,10 @@
   "dates": [
     "2025-06-20T16:00",
     "2025-06-27T22:00",
-    "2025-06-30T16:00",
-    "2025-07-03T00:00",
-    "2025-08-09T16:00",
-    "2025-08-16T16:00",
-    "2025-08-23T16:00"
+    "2025-07-02T22:00",
+    "2025-07-06T00:00",
+    "2025-08-12T16:00",
+    "2025-08-19T16:00",
+    "2025-08-26T16:00"
   ]
 }
