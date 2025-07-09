@@ -2,42 +2,18 @@
 const FILE_NAME = 'study_data.json';
 
 // 初始数据
-const initialData = {
-    "homework": Array(7).fill(null),
-    "status": Array(7).fill("pending"),
-    "dates": Array(7).fill(null)
-};
+const initialData = Array(7).fill(null).map((_, i) => ({
+    weekid: i + 1,
+    week_title: '',
+    status: 'pending',
+    hours: 1.5,
+    session_time: '',
+    summary: '',
+    homework: ''
+}));
 
 // 当前数据
-let currentData = {
-    "homework": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-    ],
-    "status": [
-        "pending",
-        "pending",
-        "pending",
-        "pending",
-        "pending",
-        "pending",
-        "pending"
-    ],
-    "dates": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-    ]
-};
+let currentData = initialData.map(week => ({ ...week }));
 
 // Show toast message
 function showToast(message) {
@@ -69,30 +45,7 @@ function loadFromJsonFile() {
                 const data = JSON.parse(xhr.responseText);
                 console.log('Parsed data:', data);
                 
-                if (data && typeof data === 'object') {
-                    // 确保数据有正确的结构
-                    if (!data.homework || !data.status) {
-                        console.error('Invalid data structure:', data);
-                        throw new Error('Invalid data structure');
-                    }
-                    
-                    // 如果缺少dates字段，添加它
-                    if (!data.dates) {
-                        data.dates = Array(7).fill(null);
-                    }
-                    
-                    // 转换字符串作业项为对象（如果需要）
-                    data.homework = data.homework.map(item => {
-                        if (typeof item === 'string') {
-                            return {
-                                text: item,
-                                timestamp: new Date().toISOString()
-                            };
-                        }
-                        return item;
-                    });
-                    
-                    console.log('Processed data:', data);
+                if (Array.isArray(data)) {
                     currentData = data;
                     updatePageData(data);
                     console.log('Data loaded and updated successfully');
@@ -288,7 +241,7 @@ function adjustDates(changedIndex) {
         currentDateInput.value = newDateStr;
         
         // 更新当前数据中的日期
-        currentData.dates[i] = newDateStr;
+        currentData[i].session_time = newDateStr;
         
         // 更新最后有效日期
         lastValidDate = new Date(currentDate);
@@ -297,7 +250,7 @@ function adjustDates(changedIndex) {
     }
     
     // 更新当前数据中的修改日期
-    currentData.dates[changedIndex] = changedDateInput.value;
+    currentData[changedIndex].session_time = changedDateInput.value;
 }
 
 // 添加日期变更监听器
@@ -315,7 +268,7 @@ function addDateChangeListeners() {
             }
             
             // 更新当前数据中的日期
-            currentData.dates[index] = dateInput.value;
+            currentData[index].session_time = dateInput.value;
             // 调整后续日期
             adjustDates(index);
         });
@@ -336,111 +289,79 @@ function formatTextWithLinks(text) {
 // 更新页面数据
 function updatePageData(data) {
     console.log('Updating page with data:', data);
-    
-    // 更新作业内容
-    data.homework.forEach((item, index) => {
-        if (item) {
-            const session = document.querySelectorAll('.session')[index];
-            if (session) {
-                const textarea = session.querySelector('.homework-input');
-                const homeworkContent = session.querySelector('.homework-content');
-                
-                if (textarea) {
-                    textarea.value = typeof item === 'string' ? item : (item.text || '');
-                    console.log(`Updated homework ${index}:`, textarea.value);
-                }
-                
-                if (homeworkContent) {
-                    homeworkContent.innerHTML = `
-                        <h4>Saved Homework:</h4>
-                        <div>${formatTextWithLinks(textarea.value)}</div>
-                        <p><small>Last updated: ${new Date().toISOString()}</small></p>
-                    `;
-                    homeworkContent.classList.add('show');
-                }
-            }
-        }
-    });
-    
-    // 更新状态
-    data.status.forEach((status, index) => {
+    data.forEach((week, index) => {
         const session = document.querySelectorAll('.session')[index];
         if (session) {
-            session.dataset.status = status;
+            // Update week title
+            const titleSpan = session.querySelector('.week-title-text');
+            const titleInput = session.querySelector('.week-title-input');
+            if (titleSpan) titleSpan.textContent = week.week_title || '';
+            if (titleInput) titleInput.value = week.week_title || '';
+            // Update summary
+            const summaryTextarea = session.querySelector('.summary-textarea');
+            const summaryView = session.querySelector('.summary-view');
+            if (summaryTextarea) summaryTextarea.value = week.summary || '';
+            if (summaryView) summaryView.innerHTML = formatTextWithLinks(week.summary || '');
+            // Update homework
+            const homeworkTextarea = session.querySelector('.homework-input');
+            const homeworkView = session.querySelector('.homework-view');
+            if (homeworkTextarea) homeworkTextarea.value = week.homework || '';
+            if (homeworkView) homeworkView.innerHTML = formatTextWithLinks(week.homework || '');
+            // Update status
+            session.dataset.status = week.status;
             const statusBadge = session.querySelector('.status-badge');
             const weekDot = document.querySelectorAll('.week-dot')[index];
-            
-            if (status === 'completed') {
-                session.classList.add('completed');
-                statusBadge.textContent = 'Completed';
-                statusBadge.classList.remove('pending');
-                statusBadge.classList.add('completed');
-                weekDot.classList.add('completed');
-                console.log(`Updated status ${index} to completed`);
+            if (statusBadge) {
+                if (week.status === 'completed') {
+                    session.classList.add('completed');
+                    statusBadge.textContent = 'Completed';
+                    statusBadge.classList.remove('pending');
+                    statusBadge.classList.add('completed');
+                    if (weekDot) weekDot.classList.add('completed');
+                } else {
+                    session.classList.remove('completed');
+                    statusBadge.textContent = 'Pending';
+                    statusBadge.classList.remove('completed');
+                    statusBadge.classList.add('pending');
+                    if (weekDot) weekDot.classList.remove('completed');
+                }
+            }
+            // Update session time
+            const dateInput = session.querySelector('input[type="datetime-local"]');
+            if (dateInput && week.session_time) {
+                dateInput.value = week.session_time;
             }
         }
     });
-
-    // 更新日期
-    if (data.dates) {
-        data.dates.forEach((date, index) => {
-            const session = document.querySelectorAll('.session')[index];
-            if (session && date) {
-                const dateInput = session.querySelector('input[type="datetime-local"]');
-                if (dateInput) {
-                    dateInput.value = date;
-                }
-            }
-        });
-    }
-
-    // 添加日期变更监听器
     addDateChangeListeners();
 }
 
 // 导出当前数据
 function exportCurrentData() {
     console.log('Exporting current data...');
-    
-    const data = {
-        homework: Array(7).fill(null),
-        status: Array(7).fill("pending"),
-        dates: Array(7).fill(null)
-    };
-    
-    // 收集作业内容、状态和日期
-    document.querySelectorAll('.session').forEach((session, index) => {
-        const textarea = session.querySelector('.homework-input');
+    const sessions = document.querySelectorAll('.session');
+    const summaryTextareas = document.querySelectorAll('.summary-textarea');
+    const data = Array.from(sessions).map((session, index) => {
+        const summaryTextarea = summaryTextareas[index];
+        const homeworkTextarea = session.querySelector('.homework-input');
         const statusBadge = session.querySelector('.status-badge');
         const dateInput = session.querySelector('input[type="datetime-local"]');
-        
-        if (textarea) {
-            data.homework[index] = {
-                text: textarea.value,
-                timestamp: new Date().toISOString()
-            };
-        }
-        
-        if (statusBadge) {
-            data.status[index] = statusBadge.textContent.toLowerCase();
-        }
-
-        if (dateInput) {
-            data.dates[index] = dateInput.value;
-            // 确保当前数据中的日期也是最新的
-            currentData.dates[index] = dateInput.value;
-        }
+        const weekTitleInput = session.querySelector('.week-title-input');
+        const weekTitleSpan = session.querySelector('.week-title-text');
+        return {
+            weekid: index + 1,
+            week_title: weekTitleInput && weekTitleInput.style.display !== 'none' ? weekTitleInput.value : (weekTitleSpan ? weekTitleSpan.textContent.trim() : ''),
+            status: statusBadge ? statusBadge.textContent.toLowerCase() : 'pending',
+            hours: 1.5,
+            session_time: dateInput ? dateInput.value : '',
+            summary: summaryTextarea ? summaryTextarea.value : '',
+            homework: homeworkTextarea ? homeworkTextarea.value : ''
+        };
     });
-    
-    console.log('Collected data for export:', data);
-    
-    // 保存到文件并下载
     try {
         const jsonString = JSON.stringify(data, null, 2);
         const blob = new Blob([jsonString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-        
-        // 创建下载链接
         const link = document.createElement('a');
         link.href = url;
         link.download = FILE_NAME;
@@ -448,8 +369,6 @@ function exportCurrentData() {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        
-        // 更新服务器上的文件
         fetch('/update_data', {
             method: 'POST',
             headers: {
@@ -459,22 +378,17 @@ function exportCurrentData() {
         })
         .then(response => response.json())
         .then(result => {
-            console.log('Server update result:', result);
             if (result.status === 'success') {
-                // 更新当前数据
                 currentData = data;
-                console.log('Data exported and server updated successfully:', data);
                 showToast('Data exported and saved successfully!');
             } else {
                 throw new Error('Server update failed');
             }
         })
         .catch(error => {
-            console.error('Error updating server:', error);
             showToast('Error updating server, but file was downloaded!');
         });
     } catch (error) {
-        console.error('Error exporting data:', error);
         showToast('Error exporting data!');
     }
 }
@@ -484,38 +398,4 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Page loaded, loading data...');
     // Load data from study_data.json
     loadFromJsonFile();
-
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = '.json';
-    fileInput.style.display = 'none';
-    fileInput.addEventListener('change', handleFileUpload);
-    document.body.appendChild(fileInput);
-    
-    // 添加导入按钮
-    const importButton = document.createElement('button');
-    importButton.textContent = 'Import Data';
-    importButton.onclick = () => {
-        // 先验证密码
-        if (verifyPassword()) {
-            fileInput.click();
-        } else {
-            showToast('Incorrect password!');
-        }
-    };
-    importButton.style.position = 'fixed';
-    importButton.style.bottom = '20px';
-    importButton.style.right = '20px';
-    importButton.style.zIndex = '1000';
-    document.body.appendChild(importButton);
-    
-    // 添加导出按钮
-    const exportButton = document.createElement('button');
-    exportButton.textContent = 'Export Data';
-    exportButton.onclick = exportCurrentData;
-    exportButton.style.position = 'fixed';
-    exportButton.style.bottom = '20px';
-    exportButton.style.right = '120px';
-    exportButton.style.zIndex = '1000';
-    document.body.appendChild(exportButton);
 }); 

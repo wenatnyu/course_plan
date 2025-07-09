@@ -392,6 +392,72 @@
                 margin: 0;
             }
         }
+
+        .section-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.5px;
+        }
+        .section-icon {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+        }
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .summary-view, .homework-view {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            color: var(--text-color);
+            background: #f6f8fa;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            min-height: 80px;
+            word-break: break-word;
+        }
+        .summary-textarea, .homework-input {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            color: var(--text-color);
+            background: #f6f8fa;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            min-height: 80px;
+            word-break: break-word;
+            border: 1.5px solid var(--border-color);
+        }
+        .admin-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            padding: 0.7rem 2rem 0.7rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+        }
+        .admin-btn:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 4px 16px rgba(37,99,235,0.15);
+            transform: translateY(-2px) scale(1.04);
+        }
     </style>
 </head>
 <body>
@@ -435,14 +501,11 @@
 
             <div class="session" data-week="1">
                 <h3>
-                    Week 1: Time Complexity
+                    <span class="week-title-text">Week 1: Time Complexity</span>
+                    <input class="week-title-input" type="text" style="display:none;" value="Week 1: Time Complexity" />
                     <span class="status-badge pending">Pending</span>
                 </h3>
                 <div class="session-info">
-                    <div class="form-group">
-                        <label>Course Content:</label>
-                        <input type="text" value="Time Complexity" readonly>
-                    </div>
                     <div class="form-group">
                         <label>Hours:</label>
                         <input type="text" value="1.5" readonly>
@@ -453,30 +516,44 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Homework and Summary:</label>
-                    <textarea class="homework-input" placeholder="Add your notes, links, or summary here..."></textarea>
+                    <div class="section-label">
+                        <span class="section-icon">📝</span>
+                        <span class="section-title">Summary</span>
+                    </div>
+                    <div class="summary-view" style="display:block;"></div>
+                    <textarea class="summary-textarea" style="display:none;" readonly>Content:
+1. Time and space complexity
+2. Vector: https://cplusplus.com/reference/vector/vector/?kw=vector
+push_back/pop_back/back/front/begin/end/resize, etc.
+
+Homework:
+1. https://www.hackerrank.com/challenges/variable-sized-arrays/problem?isFullScreen=true
+2. https://cses.fi/c1hw9kf62/task/1069
+3. https://cses.fi/c1hw9kf62/task/1070
+4. https://cses.fi/c1hw9kf62/task/1071
+5. https://cses.fi/c1hw9kf62/task/1092</textarea>
                 </div>
                 <div class="form-group">
-                    <label>Attachments:</label>
-                    <input type="file" class="file-input">
+                    <div class="section-label">
+                        <span class="section-icon">📚</span>
+                        <span class="section-title">Homework</span>
+                    </div>
+                    <div class="homework-view" style="display:block;"></div>
+                    <textarea class="homework-input" style="display:none;" readonly>1. https://www.hackerrank.com/challenges/variable-sized-arrays/problem?isFullScreen=true
+2. https://cses.fi/c1hw9kf62/task/1069
+3. https://cses.fi/c1hw9kf62/task/1070
+4. https://cses.fi/c1hw9kf62/task/1071
+5. https://cses.fi/c1hw9kf62/task/1092</textarea>
                 </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="saveHomework(0)">Save Homework</button>
-                    <button class="btn btn-success" onclick="markAsCompleted(0)">Mark as Completed</button>
-                </div>
-                <div class="homework-content" id="homework-0"></div>
             </div>
 
             <div class="session" data-week="2">
                 <h3>
-                    Week 2: Sorting
+                    <span class="week-title-text">Week 2: Sorting (Basic and Efficient Algorithms)</span>
+                    <input class="week-title-input" type="text" style="display:none;" value="Week 2: Sorting (Basic and Efficient Algorithms)" />
                     <span class="status-badge pending">Pending</span>
                 </h3>
                 <div class="session-info">
-                    <div class="form-group">
-                        <label>Course Content:</label>
-                        <input type="text" value="Sorting (Basic and Efficient Algorithms)" readonly>
-                    </div>
                     <div class="form-group">
                         <label>Hours:</label>
                         <input type="text" value="1.5" readonly>
@@ -487,30 +564,52 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Homework and Summary:</label>
-                    <textarea class="homework-input" placeholder="Add your notes, links, or summary here..."></textarea>
+                    <div class="section-label">
+                        <span class="section-icon">📝</span>
+                        <span class="section-title">Summary</span>
+                    </div>
+                    <div class="summary-view" style="display:block;"></div>
+                    <textarea class="summary-textarea" style="display:none;" readonly>Content:
+1. data structures: vector, stack, queue, priority queue, deque
+2. upper_bound/lower_bound: https://cplusplus.com/reference/algorithm/lower_bound/
+Next:
+set/map
+
+Homework:
+vector: 
+1. https://www.hackerrank.com/challenges/vector-sort/problem?isFullScreen=true
+2. https://www.hackerrank.com/challenges/vector-erase/problem?isFullScreen=true
+search:
+1. https://www.hackerrank.com/challenges/cpp-lower-bound/problem?isFullScreen=true
+deque:
+1. https://www.hackerrank.com/challenges/deque-stl/problem?isFullScreen=true
+cses:
+1. https://cses.fi/problemset/task/1621
+2. https://cses.fi/problemset/task/1091/
+</textarea>
                 </div>
                 <div class="form-group">
-                    <label>Attachments:</label>
-                    <input type="file" class="file-input">
+                    <div class="section-label">
+                        <span class="section-icon">📚</span>
+                        <span class="section-title">Homework</span>
+                    </div>
+                    <div class="homework-view" style="display:block;"></div>
+                    <textarea class="homework-input" style="display:none;" readonly>1. https://www.hackerrank.com/challenges/vector-sort/problem?isFullScreen=true
+2. https://www.hackerrank.com/challenges/vector-erase/problem?isFullScreen=true
+3. https://www.hackerrank.com/challenges/cpp-lower-bound/problem?isFullScreen=true
+4. https://www.hackerrank.com/challenges/deque-stl/problem?isFullScreen=true
+5. https://cses.fi/problemset/task/1621
+6. https://cses.fi/problemset/task/1091</textarea>
                 </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="saveHomework(1)">Save Homework</button>
-                    <button class="btn btn-success" onclick="markAsCompleted(1)">Mark as Completed</button>
-                </div>
-                <div class="homework-content" id="homework-1"></div>
             </div>
 
             <div class="session" data-week="3">
                 <h3>
-                    Week 3: Basic Data Structures
+                    <span class="week-title-text">Week 3: Basic Data Structures (set, map, multiset, multimap, unordered...)</span>
+                    <input class="week-title-input" type="text" style="display:none;" value="Week 3: Basic Data Structures (set, map, multiset, multimap, unordered...)" />
                     <span class="status-badge pending">Pending</span>
                 </h3>
                 <div class="session-info">
-                    <div class="form-group">
-                        <label>Course Content:</label>
-                        <input type="text" value="Basic Data Structures (Arrays, Maps, etc.)" readonly>
-                    </div>
                     <div class="form-group">
                         <label>Hours:</label>
                         <input type="text" value="1.5" readonly>
@@ -521,30 +620,62 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Homework and Summary:</label>
-                    <textarea class="homework-input" placeholder="Add your notes, links, or summary here..."></textarea>
+                    <div class="section-label">
+                        <span class="section-icon">📝</span>
+                        <span class="section-title">Summary</span>
+                    </div>
+                    <div class="summary-view" style="display:block;"></div>
+                    <textarea class="summary-textarea" style="display:none;" readonly>Content:
+1. set, map, multiset, multimap, unordered...
+2. find, count, upper_bound/lower_bound
+3. struct
+
+Next:
+operator overload, struct comparison...
+recursion...
+
+Homework:
+struct:
+https://www.hackerrank.com/challenges/c-tutorial-struct/problem?isFullScreen=true
+set:
+https://www.hackerrank.com/challenges/cpp-sets/problem?isFullScreen=true
+map:
+https://www.hackerrank.com/challenges/cpp-maps/problem?isFullScreen=true
+cses:
+0. https://cses.fi/problemset/task/1091
+1. https://cses.fi/problemset/task/1617
+2. https://cses.fi/problemset/task/1618
+3. https://cses.fi/problemset/task/1755
+4. https://cses.fi/problemset/task/1090
+*5. https://cses.fi/problemset/task/2205
+
+</textarea>
                 </div>
                 <div class="form-group">
-                    <label>Attachments:</label>
-                    <input type="file" class="file-input">
+                    <div class="section-label">
+                        <span class="section-icon">📚</span>
+                        <span class="section-title">Homework</span>
+                    </div>
+                    <div class="homework-view" style="display:block;"></div>
+                    <textarea class="homework-input" style="display:none;" readonly>1. https://www.hackerrank.com/challenges/c-tutorial-struct/problem?isFullScreen=true
+2. https://www.hackerrank.com/challenges/cpp-sets/problem?isFullScreen=true
+3. https://www.hackerrank.com/challenges/cpp-maps/problem?isFullScreen=true
+4. https://cses.fi/problemset/task/1091
+5. https://cses.fi/problemset/task/1617
+6. https://cses.fi/problemset/task/1618
+7. https://cses.fi/problemset/task/1755
+8. https://cses.fi/problemset/task/1090
+9. https://cses.fi/problemset/task/2205</textarea>
                 </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="saveHomework(2)">Save Homework</button>
-                    <button class="btn btn-success" onclick="markAsCompleted(2)">Mark as Completed</button>
-                </div>
-                <div class="homework-content" id="homework-2"></div>
             </div>
 
             <div class="session" data-week="4">
                 <h3>
-                    Week 4: Complete Search & Backtracking
+                    <span class="week-title-text">Week 4: Complete Search & Backtracking</span>
+                    <input class="week-title-input" type="text" style="display:none;" value="Week 4: Complete Search & Backtracking" />
                     <span class="status-badge pending">Pending</span>
                 </h3>
                 <div class="session-info">
-                    <div class="form-group">
-                        <label>Course Content:</label>
-                        <input type="text" value="Complete Search & Backtracking" readonly>
-                    </div>
                     <div class="form-group">
                         <label>Hours:</label>
                         <input type="text" value="1.5" readonly>
@@ -555,30 +686,30 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Homework and Summary:</label>
-                    <textarea class="homework-input" placeholder="Add your notes, links, or summary here..."></textarea>
+                    <div class="section-label">
+                        <span class="section-icon">📝</span>
+                        <span class="section-title">Summary</span>
+                    </div>
+                    <div class="summary-view" style="display:block;"></div>
+                    <textarea class="summary-textarea" style="display:none;" readonly></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Attachments:</label>
-                    <input type="file" class="file-input">
+                    <div class="section-label">
+                        <span class="section-icon">📚</span>
+                        <span class="section-title">Homework</span>
+                    </div>
+                    <div class="homework-view" style="display:block;"></div>
+                    <textarea class="homework-input" style="display:none;" readonly></textarea>
                 </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="saveHomework(3)">Save Homework</button>
-                    <button class="btn btn-success" onclick="markAsCompleted(3)">Mark as Completed</button>
-                </div>
-                <div class="homework-content" id="homework-3"></div>
             </div>
 
             <div class="session" data-week="5">
                 <h3>
-                    Week 5: Greedy Algorithms
+                    <span class="week-title-text">Week 5: Greedy Algorithms</span>
+                    <input class="week-title-input" type="text" style="display:none;" value="Week 5: Greedy Algorithms" />
                     <span class="status-badge pending">Pending</span>
                 </h3>
                 <div class="session-info">
-                    <div class="form-group">
-                        <label>Course Content:</label>
-                        <input type="text" value="Greedy Algorithms" readonly>
-                    </div>
                     <div class="form-group">
                         <label>Hours:</label>
                         <input type="text" value="1.5" readonly>
@@ -589,30 +720,30 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Homework and Summary:</label>
-                    <textarea class="homework-input" placeholder="Add your notes, links, or summary here..."></textarea>
+                    <div class="section-label">
+                        <span class="section-icon">📝</span>
+                        <span class="section-title">Summary</span>
+                    </div>
+                    <div class="summary-view" style="display:block;"></div>
+                    <textarea class="summary-textarea" style="display:none;" readonly></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Attachments:</label>
-                    <input type="file" class="file-input">
+                    <div class="section-label">
+                        <span class="section-icon">📚</span>
+                        <span class="section-title">Homework</span>
+                    </div>
+                    <div class="homework-view" style="display:block;"></div>
+                    <textarea class="homework-input" style="display:none;" readonly></textarea>
                 </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="saveHomework(4)">Save Homework</button>
-                    <button class="btn btn-success" onclick="markAsCompleted(4)">Mark as Completed</button>
-                </div>
-                <div class="homework-content" id="homework-4"></div>
             </div>
 
             <div class="session" data-week="6">
                 <h3>
-                    Week 6: Dynamic Programming (Concepts)
+                    <span class="week-title-text">Week 6: Dynamic Programming (Concepts)</span>
+                    <input class="week-title-input" type="text" style="display:none;" value="Week 6: Dynamic Programming (Concepts)" />
                     <span class="status-badge pending">Pending</span>
                 </h3>
                 <div class="session-info">
-                    <div class="form-group">
-                        <label>Course Content:</label>
-                        <input type="text" value="Dynamic Programming (Concepts)" readonly>
-                    </div>
                     <div class="form-group">
                         <label>Hours:</label>
                         <input type="text" value="1.5" readonly>
@@ -623,30 +754,30 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Homework and Summary:</label>
-                    <textarea class="homework-input" placeholder="Add your notes, links, or summary here..."></textarea>
+                    <div class="section-label">
+                        <span class="section-icon">📝</span>
+                        <span class="section-title">Summary</span>
+                    </div>
+                    <div class="summary-view" style="display:block;"></div>
+                    <textarea class="summary-textarea" style="display:none;" readonly></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Attachments:</label>
-                    <input type="file" class="file-input">
+                    <div class="section-label">
+                        <span class="section-icon">📚</span>
+                        <span class="section-title">Homework</span>
+                    </div>
+                    <div class="homework-view" style="display:block;"></div>
+                    <textarea class="homework-input" style="display:none;" readonly></textarea>
                 </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="saveHomework(5)">Save Homework</button>
-                    <button class="btn btn-success" onclick="markAsCompleted(5)">Mark as Completed</button>
-                </div>
-                <div class="homework-content" id="homework-5"></div>
             </div>
 
             <div class="session" data-week="7">
                 <h3>
-                    Week 7: DP Applications
+                    <span class="week-title-text">Week 7: DP Applications</span>
+                    <input class="week-title-input" type="text" style="display:none;" value="Week 7: DP Applications" />
                     <span class="status-badge pending">Pending</span>
                 </h3>
                 <div class="session-info">
-                    <div class="form-group">
-                        <label>Course Content:</label>
-                        <input type="text" value="DP Applications (Knapsack, LIS, etc.)" readonly>
-                    </div>
                     <div class="form-group">
                         <label>Hours:</label>
                         <input type="text" value="1.5" readonly>
@@ -657,18 +788,21 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Homework and Summary:</label>
-                    <textarea class="homework-input" placeholder="Add your notes, links, or summary here..."></textarea>
+                    <div class="section-label">
+                        <span class="section-icon">📝</span>
+                        <span class="section-title">Summary</span>
+                    </div>
+                    <div class="summary-view" style="display:block;"></div>
+                    <textarea class="summary-textarea" style="display:none;" readonly></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Attachments:</label>
-                    <input type="file" class="file-input">
+                    <div class="section-label">
+                        <span class="section-icon">📚</span>
+                        <span class="section-title">Homework</span>
+                    </div>
+                    <div class="homework-view" style="display:block;"></div>
+                    <textarea class="homework-input" style="display:none;" readonly></textarea>
                 </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="saveHomework(6)">Save Homework</button>
-                    <button class="btn btn-success" onclick="markAsCompleted(6)">Mark as Completed</button>
-                </div>
-                <div class="homework-content" id="homework-6"></div>
             </div>
         </div>
 
@@ -699,6 +833,9 @@
 
     <div class="toast" id="toast">Changes saved successfully!</div>
 
+    <button id="admin-btn" class="admin-btn">🔒 Admin</button>
+    <button id="save-btn" style="position:fixed;top:20px;right:100px;z-index:1001;display:none;">Save</button>
+
     <!-- 引入保存脚本 -->
     <script src="save_data.js"></script>
 
@@ -706,75 +843,45 @@
         // Helper: Convert URLs to clickable links and preserve line breaks
         function formatTextWithLinks(text) {
             if (!text) return '';
-            // Convert URLs to links
-            const urlRegex = /(https?:\/\/[\w\-\.\/?#&=;%+~:@!$'()*\[\],]+)/g;
+            const urlRegex = /(https?:\/\/[\w\-\.\/\?#&=;%+~:@!$'()*\[\],]+)/g;
             let html = text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
-            // Convert newlines to <br>
             html = html.replace(/\n/g, '<br>');
             return html;
         }
 
-        // Save homework content
-        function saveHomework(index) {
-            const session = document.querySelectorAll('.session')[index];
-            const homeworkInput = session.querySelector('.homework-input');
-            const homeworkContent = session.querySelector('.homework-content');
-            const fileInput = session.querySelector('.file-input');
-            
-            // Prepare homework data
-            const homeworkData = {
-                text: homeworkInput.value,
-                files: fileInput.files ? Array.from(fileInput.files).map(f => f.name) : [],
-                timestamp: new Date().toISOString()
-            };
-            
-            // Update current data
-            currentData.homework[index] = homeworkData;
-            
-            // Display saved content
-            homeworkContent.innerHTML = `
-                <h4>Saved Homework:</h4>
-                <div>${formatTextWithLinks(homeworkInput.value)}</div>
-                ${homeworkData.files.length ? `
-                    <h4>Attached Files:</h4>
-                    <ul>
-                        ${homeworkData.files.map(f => `<li>${f}</li>`).join('')}
-                    </ul>
-                ` : ''}
-                <p><small>Last updated: ${new Date(homeworkData.timestamp).toLocaleString()}</small></p>
-            `;
-            homeworkContent.classList.add('show');
-            
-            showToast('Homework saved successfully!');
+        function updateSummaryAndHomeworkViews() {
+            document.querySelectorAll('.session').forEach(session => {
+                const summaryTextarea = session.querySelector('.summary-textarea');
+                const summaryView = session.querySelector('.summary-view');
+                if (summaryTextarea && summaryView) {
+                    summaryView.innerHTML = formatTextWithLinks(summaryTextarea.value);
+                }
+                const homeworkTextarea = session.querySelector('.homework-input');
+                const homeworkView = session.querySelector('.homework-view');
+                if (homeworkTextarea && homeworkView) {
+                    homeworkView.innerHTML = formatTextWithLinks(homeworkTextarea.value);
+                }
+            });
         }
 
-        // Mark as completed
-        function markAsCompleted(index) {
-            // Update current data
-            currentData.status[index] = 'completed';
-            
-            const session = document.querySelectorAll('.session')[index];
-            const statusBadge = session.querySelector('.status-badge');
-            const weekDot = document.querySelectorAll('.week-dot')[index];
-            
-            session.classList.add('completed');
-            statusBadge.textContent = 'Completed';
-            statusBadge.classList.remove('pending');
-            statusBadge.classList.add('completed');
-            weekDot.classList.add('completed');
-            
-            showToast('Marked as completed!');
+        function updateWeekTitleInputs() {
+            document.querySelectorAll('.session').forEach(session => {
+                const titleSpan = session.querySelector('.week-title-text');
+                const titleInput = session.querySelector('.week-title-input');
+                if (titleSpan && titleInput) {
+                    titleInput.value = titleSpan.textContent.trim();
+                }
+            });
         }
 
-        // Show toast message
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+        function syncWeekTitleSpans() {
+            document.querySelectorAll('.session').forEach(session => {
+                const titleSpan = session.querySelector('.week-title-text');
+                const titleInput = session.querySelector('.week-title-input');
+                if (titleSpan && titleInput) {
+                    titleSpan.textContent = titleInput.value;
+                }
+            });
         }
 
         // Load data when page loads
@@ -812,6 +919,66 @@
                     dot.classList.add('active');
                     document.querySelectorAll('.session')[index].scrollIntoView({ behavior: 'smooth' });
                 });
+            });
+
+            // Admin mode logic
+            let isAdmin = false;
+            const adminBtn = document.getElementById('admin-btn');
+            const saveBtn = document.getElementById('save-btn');
+            // Initial render of views
+            updateSummaryAndHomeworkViews();
+            // Hide textareas, show views by default
+            document.querySelectorAll('.summary-textarea, .homework-input').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.summary-view, .homework-view').forEach(v => v.style.display = 'block');
+            adminBtn.addEventListener('click', () => {
+                const pwd = prompt('Enter admin password:');
+                if (pwd === '1') {
+                    isAdmin = true;
+                    document.querySelectorAll('.summary-textarea, .homework-input').forEach(t => { t.removeAttribute('readonly'); t.style.display = 'block'; });
+                    document.querySelectorAll('.summary-view, .homework-view').forEach(v => v.style.display = 'none');
+                    document.querySelectorAll('.week-title-text').forEach(s => s.style.display = 'none');
+                    document.querySelectorAll('.week-title-input').forEach(i => i.style.display = 'inline-block');
+                    updateWeekTitleInputs();
+                    saveBtn.style.display = 'block';
+                    // Make status badge editable (toggle on click in admin mode)
+                    document.querySelectorAll('.status-badge').forEach(badge => {
+                        badge.style.cursor = 'pointer';
+                        badge.onclick = function () {
+                            if (!isAdmin) return;
+                            if (badge.textContent === 'Completed') {
+                                badge.textContent = 'Pending';
+                                badge.classList.remove('completed');
+                                badge.classList.add('pending');
+                                badge.closest('.session').classList.remove('completed');
+                            } else {
+                                badge.textContent = 'Completed';
+                                badge.classList.remove('pending');
+                                badge.classList.add('completed');
+                                badge.closest('.session').classList.add('completed');
+                            }
+                        };
+                    });
+                } else {
+                    alert('Incorrect password!');
+                }
+            });
+            saveBtn.addEventListener('click', () => {
+                if (typeof exportCurrentData === 'function') {
+                    syncWeekTitleSpans();
+                    exportCurrentData();
+                    saveBtn.style.display = 'none';
+                    isAdmin = false;
+                    document.querySelectorAll('.summary-textarea, .homework-input').forEach(t => { t.setAttribute('readonly', 'readonly'); t.style.display = 'none'; });
+                    updateSummaryAndHomeworkViews();
+                    document.querySelectorAll('.summary-view, .homework-view').forEach(v => v.style.display = 'block');
+                    document.querySelectorAll('.week-title-input').forEach(i => i.style.display = 'none');
+                    document.querySelectorAll('.week-title-text').forEach(s => s.style.display = 'inline-block');
+                    // Remove status badge pointer and click after save
+                    document.querySelectorAll('.status-badge').forEach(badge => {
+                        badge.style.cursor = '';
+                        badge.onclick = null;
+                    });
+                }
             });
         });
 
