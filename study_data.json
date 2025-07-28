@@ -37,19 +37,19 @@
   },
   {
     "weekid": 5,
-    "week_title": "Week 5: Complete Search & Backtracking+Greedy Algorithms",
-    "status": "pending",
+    "week_title": "Week 5: Recursion I",
+    "status": "completed",
     "hours": 1.5,
-    "session_time": "2025-08-10T16:00",
-    "summary": "",
-    "homework": ""
+    "session_time": "2025-07-26T22:00",
+    "summary": "Recursion with function\nExample Question:\nhttps://cses.fi/problemset/task/2205\nNext:\nrecursion in searching\n",
+    "homework": "1.https://cses.fi/problemset/task/2205\n2.https://cses.fi/problemset/task/2165"
   },
   {
     "weekid": 6,
-    "week_title": "Week 6: Dynamic Programming (Concepts)",
+    "week_title": "Week 6: Complete Search & Backtracking+Greedy Algorithms+Dynamic Programming (Concepts)",
     "status": "pending",
     "hours": 1.5,
-    "session_time": "2025-08-17T16:00",
+    "session_time": "2025-08-15T16:00",
     "summary": "",
     "homework": ""
   },
@@ -58,7 +58,7 @@
     "week_title": "Week 7: DP Applications",
     "status": "pending",
     "hours": 1.5,
-    "session_time": "2025-08-24T16:00",
+    "session_time": "2025-08-22T16:00",
     "summary": "",
     "homework": ""
   }
