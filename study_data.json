@@ -55,11 +55,11 @@
   },
   {
     "weekid": 7,
-    "week_title": "Week 7: DP Applications",
-    "status": "pending",
+    "week_title": "Week 7: Permutaion and Combination in Programming I",
+    "status": "completed",
     "hours": 1.5,
-    "session_time": "2025-08-20T16:00",
-    "summary": "Complete Search & Backtracking+Greedy Algorithms+Dynamic Programming (Concepts)",
-    "homework": ""
+    "session_time": "2025-09-13T22:00",
+    "summary": "Review:\n1. Time complexity: O(1), O(logn), O(n**0.5), O(n), O(nlogn), O(n**k), O(2**n), O(n!) \n2. 32-bit integer(int), 64-bit integer(long long)\n3. String operations: substr, begin, end, sort ... (https://cplusplus.com/reference/string/string/)\n4. set/map operations: insert, \n5. STL functions: sort, next_permutation...(https://cplusplus.com/reference/algorithm/)",
+    "homework": "1. https://cses.fi/problemset/task/1622\n\n(TODO:\nComplete Search & Backtracking+Greedy Algorithms+Dynamic Programming (Concepts) & DP Applications)"
   }
 ]
