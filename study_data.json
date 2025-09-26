@@ -61,5 +61,23 @@
     "session_time": "2025-09-13T22:00",
     "summary": "Review:\n1. Time complexity: O(1), O(logn), O(n**0.5), O(n), O(nlogn), O(n**k), O(2**n), O(n!) \n2. 32-bit integer(int), 64-bit integer(long long)\n3. String operations: substr, begin, end, sort ... (https://cplusplus.com/reference/string/string/)\n4. set/map operations: insert, \n5. STL functions: sort, next_permutation...(https://cplusplus.com/reference/algorithm/)",
     "homework": "1. https://cses.fi/problemset/task/1622\n\n(TODO:\nComplete Search & Backtracking+Greedy Algorithms+Dynamic Programming (Concepts) & DP Applications)"
+  },
+  {
+    "weekid": 8,
+    "week_title": "Week 8: Permutaion and Combination in Programming II: Backtracking",
+    "status": "completed",
+    "hours": 1.5,
+    "session_time": "2025-09-20T22:00",
+    "summary": "Study case:\nhttps://cses.fi/problemset/task/1623\ntwo methods to generate 2^n subsets of N elements\n",
+    "homework": "Using two methods to complete:\nhttps://cses.fi/problemset/task/1623\n\n(TODO:Backtracking+Greedy Algorithms+Dynamic Programming (Concepts) & DP Applications)"
+  },
+  {
+    "weekid": 9,
+    "week_title": "Week 9: backtracking",
+    "status": "pending",
+    "hours": 1.5,
+    "session_time": "2025-09-27T14:00",
+    "summary": "",
+    "homework": ""
   }
 ]

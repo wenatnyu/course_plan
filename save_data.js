@@ -2,18 +2,27 @@
 const FILE_NAME = 'study_data.json';
 
 // 初始数据
-const initialData = Array(7).fill(null).map((_, i) => ({
-    weekid: i + 1,
-    week_title: '',
-    status: 'pending',
-    hours: 1.5,
-    session_time: '',
-    summary: '',
-    homework: ''
-}));
+function createInitialData(weekCount = 7) {
+    return Array(weekCount).fill(null).map((_, i) => ({
+        weekid: i + 1,
+        week_title: '',
+        status: 'pending',
+        hours: 1.5,
+        session_time: '',
+        summary: '',
+        homework: ''
+    }));
+}
+
+const initialData = createInitialData(7);
 
 // 当前数据
-let currentData = initialData.map(week => ({ ...week }));
+let currentData = createInitialData(7);
+
+// Make currentData and helper functions globally accessible
+window.currentData = currentData;
+window.createNewWeekSession = createNewWeekSession;
+window.adjustDates = null; // Will be set after adjustDates function definition
 
 // Show toast message
 function showToast(message) {
@@ -47,6 +56,7 @@ function loadFromJsonFile() {
                 
                 if (Array.isArray(data)) {
                     currentData = data;
+                    window.currentData = currentData; // Sync global reference
                     updatePageData(data);
                     console.log('Data loaded and updated successfully');
                     showToast('Data loaded successfully!');
@@ -56,22 +66,25 @@ function loadFromJsonFile() {
                 }
             } catch (error) {
                 console.error('Error parsing data:', error);
-                currentData = initialData;
-                updatePageData(initialData);
+                currentData = createInitialData(7);
+                window.currentData = currentData; // Sync global reference
+                updatePageData(currentData);
                 showToast('Error loading data, using initial data');
             }
         } else {
             console.error('Failed to load data, status:', xhr.status);
-            currentData = initialData;
-            updatePageData(initialData);
+            currentData = createInitialData(7);
+            window.currentData = currentData; // Sync global reference
+            updatePageData(currentData);
             showToast('Failed to load data, using initial data');
         }
     };
     
     xhr.onerror = function(error) {
         console.error('XHR error:', error);
-        currentData = initialData;
-        updatePageData(initialData);
+        currentData = createInitialData(7);
+        window.currentData = currentData; // Sync global reference
+        updatePageData(currentData);
         showToast('Error loading data, using initial data');
     };
     
@@ -241,7 +254,9 @@ function adjustDates(changedIndex) {
         currentDateInput.value = newDateStr;
         
         // 更新当前数据中的日期
-        currentData[i].session_time = newDateStr;
+        if (i < currentData.length) {
+            currentData[i].session_time = newDateStr;
+        }
         
         // 更新最后有效日期
         lastValidDate = new Date(currentDate);
@@ -250,8 +265,13 @@ function adjustDates(changedIndex) {
     }
     
     // 更新当前数据中的修改日期
-    currentData[changedIndex].session_time = changedDateInput.value;
+    if (changedIndex < currentData.length) {
+        currentData[changedIndex].session_time = changedDateInput.value;
+    }
 }
+
+// Make adjustDates globally accessible
+window.adjustDates = adjustDates;
 
 // 添加日期变更监听器
 function addDateChangeListeners() {
@@ -261,17 +281,25 @@ function addDateChangeListeners() {
             return;
         }
         
-        dateInput.addEventListener('change', () => {
+        // Remove existing event listeners to avoid duplicates
+        dateInput.removeEventListener('change', dateInput._changeHandler);
+        
+        // Create new change handler
+        dateInput._changeHandler = () => {
             if (!dateInput.value) {
                 console.error('Empty date value at index:', index);
                 return;
             }
             
-            // 更新当前数据中的日期
-            currentData[index].session_time = dateInput.value;
+            // 更新当前数据中的日期 (需要检查数组范围)
+            if (index < currentData.length) {
+                currentData[index].session_time = dateInput.value;
+            }
             // 调整后续日期
             adjustDates(index);
-        });
+        };
+        
+        dateInput.addEventListener('change', dateInput._changeHandler);
     });
 }
 
@@ -286,9 +314,146 @@ function formatTextWithLinks(text) {
     return html;
 }
 
+// 创建新的周会话DOM元素
+function createNewWeekSession(weekNumber, weekData) {
+    // Create new week dot in progress indicator
+    const progressIndicator = document.querySelector('.progress-indicator');
+    if (!progressIndicator) {
+        console.error('Progress indicator not found');
+        return null;
+    }
+    
+    const newWeekDot = document.createElement('div');
+    newWeekDot.className = 'week-dot';
+    newWeekDot.title = `Week ${weekNumber}`;
+    progressIndicator.appendChild(newWeekDot);
+    
+    // Calculate session date if not provided
+    let sessionDate = weekData.session_time;
+    if (!sessionDate) {
+        const existingSessions = document.querySelectorAll('.session');
+        if (existingSessions.length > 0) {
+            const lastSession = existingSessions[existingSessions.length - 1];
+            const lastDateInput = lastSession.querySelector('input[type="datetime-local"]');
+            if (lastDateInput && lastDateInput.value) {
+                const lastDate = new Date(lastDateInput.value);
+                lastDate.setDate(lastDate.getDate() + 7);
+                sessionDate = lastDate.toISOString().slice(0, 16);
+            }
+        }
+    }
+    
+    // Create new session element
+    const newSession = document.createElement('div');
+    newSession.className = 'session';
+    newSession.setAttribute('data-week', weekNumber);
+    
+    newSession.innerHTML = `
+        <h3>
+            <span class="week-title-text">${weekData.week_title || `Week ${weekNumber}: New Topic`}</span>
+            <input class="week-title-input" type="text" style="display:none;" value="${weekData.week_title || `Week ${weekNumber}: New Topic`}" />
+            <span class="status-badge ${weekData.status || 'pending'}">${weekData.status === 'completed' ? 'Completed' : 'Pending'}</span>
+        </h3>
+        <div class="session-info">
+            <div class="form-group">
+                <label>Hours:</label>
+                <input type="text" value="${weekData.hours || 1.5}" readonly>
+            </div>
+            <div class="form-group">
+                <label>Session Time:</label>
+                <input type="datetime-local" value="${sessionDate || ''}">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="section-label">
+                <span class="section-icon">📝</span>
+                <span class="section-title">Summary</span>
+            </div>
+            <div class="summary-view" style="display:block;"></div>
+            <textarea class="summary-textarea" style="display:none;" readonly>${weekData.summary || ''}</textarea>
+        </div>
+        <div class="form-group">
+            <div class="section-label">
+                <span class="section-icon">📚</span>
+                <span class="section-title">Homework</span>
+            </div>
+            <div class="homework-view" style="display:block;"></div>
+            <textarea class="homework-input" style="display:none;" readonly>${weekData.homework || ''}</textarea>
+        </div>
+    `;
+    
+    // Insert the new session into phase 1
+    const phase1Content = document.getElementById('phase-1');
+    if (!phase1Content) {
+        console.error('Phase 1 content not found');
+        return null;
+    }
+    
+    const existingSessions = phase1Content.querySelectorAll('.session');
+    if (existingSessions.length > 0) {
+        const lastSession = existingSessions[existingSessions.length - 1];
+        lastSession.parentNode.insertBefore(newSession, lastSession.nextSibling);
+    } else {
+        // If no sessions exist, insert after header
+        const header = phase1Content.querySelector('header');
+        if (header) {
+            header.parentNode.insertBefore(newSession, header.nextSibling);
+        } else {
+            phase1Content.appendChild(newSession);
+        }
+    }
+    
+    // Set status classes
+    if (weekData.status === 'completed') {
+        newSession.classList.add('completed');
+        newWeekDot.classList.add('completed');
+    }
+    
+    // Update the view content with formatted text
+    const summaryView = newSession.querySelector('.summary-view');
+    const homeworkView = newSession.querySelector('.homework-view');
+    if (summaryView) {
+        summaryView.innerHTML = formatTextWithLinks(weekData.summary || '');
+    }
+    if (homeworkView) {
+        homeworkView.innerHTML = formatTextWithLinks(weekData.homework || '');
+    }
+    
+    // Add click event to new week dot
+    newWeekDot.addEventListener('click', () => {
+        document.querySelectorAll('.week-dot').forEach(d => d.classList.remove('active'));
+        newWeekDot.classList.add('active');
+        newSession.scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    return newSession;
+}
+
 // 更新页面数据
 function updatePageData(data) {
     console.log('Updating page with data:', data);
+    
+    // 更新 currentData 以匹配新数据
+    currentData = data;
+    window.currentData = currentData; // Sync global reference
+    
+    // 如果数据中的周数多于DOM中的session，需要动态创建新的session
+    const existingSessions = document.querySelectorAll('.session');
+    const existingWeekDots = document.querySelectorAll('.week-dot');
+    
+    // Create missing week sessions
+    for (let i = existingSessions.length; i < data.length; i++) {
+        try {
+            console.log(`Creating new week session for week ${i + 1}`);
+            const newSession = createNewWeekSession(i + 1, data[i]);
+            if (!newSession) {
+                console.error(`Failed to create session for week ${i + 1}`);
+            }
+        } catch (error) {
+            console.error(`Error creating week session ${i + 1}:`, error);
+        }
+    }
+    
     data.forEach((week, index) => {
         const session = document.querySelectorAll('.session')[index];
         if (session) {
@@ -340,9 +505,8 @@ function updatePageData(data) {
 function exportCurrentData() {
     console.log('Exporting current data...');
     const sessions = document.querySelectorAll('.session');
-    const summaryTextareas = document.querySelectorAll('.summary-textarea');
     const data = Array.from(sessions).map((session, index) => {
-        const summaryTextarea = summaryTextareas[index];
+        const summaryTextarea = session.querySelector('.summary-textarea');
         const homeworkTextarea = session.querySelector('.homework-input');
         const statusBadge = session.querySelector('.status-badge');
         const dateInput = session.querySelector('input[type="datetime-local"]');
@@ -380,6 +544,7 @@ function exportCurrentData() {
         .then(result => {
             if (result.status === 'success') {
                 currentData = data;
+                window.currentData = currentData; // Sync global reference
                 showToast('Data exported and saved successfully!');
             } else {
                 throw new Error('Server update failed');

@@ -497,6 +497,11 @@
                     <div class="week-dot" title="Week 6"></div>
                     <div class="week-dot" title="Week 7"></div>
                 </div>
+                
+                <!-- Add Week Button -->
+                <div style="text-align: center; margin: 1rem 0;">
+                    <button id="add-week-btn" class="btn btn-primary" style="display: none;">➕ Add Week</button>
+                </div>
             </header>
 
             <div class="session" data-week="1">
@@ -940,6 +945,8 @@ cses:
                     document.querySelectorAll('.week-title-input').forEach(i => i.style.display = 'inline-block');
                     updateWeekTitleInputs();
                     saveBtn.style.display = 'block';
+                    // Show add week button in admin mode
+                    document.getElementById('add-week-btn').style.display = 'inline-block';
                     // Make status badge editable (toggle on click in admin mode)
                     document.querySelectorAll('.status-badge').forEach(badge => {
                         badge.style.cursor = 'pointer';
@@ -967,6 +974,8 @@ cses:
                     syncWeekTitleSpans();
                     exportCurrentData();
                     saveBtn.style.display = 'none';
+                    // Hide add week button when exiting admin mode
+                    document.getElementById('add-week-btn').style.display = 'none';
                     isAdmin = false;
                     document.querySelectorAll('.summary-textarea, .homework-input').forEach(t => { t.setAttribute('readonly', 'readonly'); t.style.display = 'none'; });
                     updateSummaryAndHomeworkViews();
@@ -979,6 +988,122 @@ cses:
                         badge.onclick = null;
                     });
                 }
+            });
+
+            // Add Week functionality
+            document.getElementById('add-week-btn').addEventListener('click', () => {
+                if (!isAdmin) {
+                    alert('Admin access required to add weeks!');
+                    return;
+                }
+                
+                const currentWeeks = document.querySelectorAll('.session').length;
+                const newWeekNumber = currentWeeks + 1;
+                
+                // Create new week data entry
+                const newWeekData = {
+                    weekid: newWeekNumber,
+                    week_title: `Week ${newWeekNumber}: New Topic`,
+                    status: 'pending',
+                    hours: 1.5,
+                    session_time: '',
+                    summary: '',
+                    homework: ''
+                };
+                
+                // Calculate session date
+                const lastSession = document.querySelectorAll('.session')[currentWeeks - 1];
+                if (lastSession) {
+                    const lastDateInput = lastSession.querySelector('input[type="datetime-local"]');
+                    if (lastDateInput && lastDateInput.value) {
+                        const lastDate = new Date(lastDateInput.value);
+                        lastDate.setDate(lastDate.getDate() + 7);
+                        newWeekData.session_time = lastDate.toISOString().slice(0, 16);
+                    }
+                }
+                
+                // Add to currentData
+                if (typeof currentData === 'undefined') {
+                    window.currentData = [];
+                }
+                currentData.push(newWeekData);
+                
+                // Create the new session using the helper function
+                const newSession = createNewWeekSession(newWeekNumber, newWeekData);
+                
+                // Make elements editable in admin mode
+                const titleSpan = newSession.querySelector('.week-title-text');
+                const titleInput = newSession.querySelector('.week-title-input');
+                const summaryTextarea = newSession.querySelector('.summary-textarea');
+                const homeworkTextarea = newSession.querySelector('.homework-input');
+                const summaryView = newSession.querySelector('.summary-view');
+                const homeworkView = newSession.querySelector('.homework-view');
+                
+                // Set admin mode styles
+                if (titleSpan) titleSpan.style.display = 'none';
+                if (titleInput) titleInput.style.display = 'inline-block';
+                if (summaryTextarea) {
+                    summaryTextarea.removeAttribute('readonly');
+                    summaryTextarea.style.display = 'block';
+                }
+                if (homeworkTextarea) {
+                    homeworkTextarea.removeAttribute('readonly');
+                    homeworkTextarea.style.display = 'block';
+                }
+                if (summaryView) summaryView.style.display = 'none';
+                if (homeworkView) homeworkView.style.display = 'none';
+                
+                // Make the new status badge editable
+                const newStatusBadge = newSession.querySelector('.status-badge');
+                const newWeekDot = document.querySelectorAll('.week-dot')[newWeekNumber - 1];
+                
+                if (newStatusBadge) {
+                    newStatusBadge.style.cursor = 'pointer';
+                    newStatusBadge.onclick = function () {
+                        if (!isAdmin) return;
+                        if (newStatusBadge.textContent === 'Completed') {
+                            newStatusBadge.textContent = 'Pending';
+                            newStatusBadge.classList.remove('completed');
+                            newStatusBadge.classList.add('pending');
+                            newSession.classList.remove('completed');
+                            if (newWeekDot) newWeekDot.classList.remove('completed');
+                        } else {
+                            newStatusBadge.textContent = 'Completed';
+                            newStatusBadge.classList.remove('pending');
+                            newStatusBadge.classList.add('completed');
+                            newSession.classList.add('completed');
+                            if (newWeekDot) newWeekDot.classList.add('completed');
+                        }
+                    };
+                }
+                
+                // Add date change listener to the new session
+                const newDateInput = newSession.querySelector('input[type="datetime-local"]');
+                if (newDateInput) {
+                    // Remove existing event listeners to avoid duplicates
+                    newDateInput.removeEventListener('change', newDateInput._changeHandler);
+                    
+                    // Create new change handler
+                    newDateInput._changeHandler = () => {
+                        if (!newDateInput.value) return;
+                        
+                        // Update currentData
+                        if (newWeekNumber - 1 < currentData.length) {
+                            currentData[newWeekNumber - 1].session_time = newDateInput.value;
+                        }
+                        // Adjust subsequent dates
+                        if (typeof adjustDates === 'function') {
+                            adjustDates(newWeekNumber - 1);
+                        }
+                    };
+                    
+                    newDateInput.addEventListener('change', newDateInput._changeHandler);
+                }
+                
+                // Scroll to the new session
+                newSession.scrollIntoView({ behavior: 'smooth' });
+                
+                alert(`Week ${newWeekNumber} has been added successfully!`);
             });
         });
 
