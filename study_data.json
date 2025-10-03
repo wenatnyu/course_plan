@@ -69,14 +69,23 @@
     "hours": 1.5,
     "session_time": "2025-09-20T22:00",
     "summary": "Study case:\nhttps://cses.fi/problemset/task/1623\ntwo methods to generate 2^n subsets of N elements\n",
-    "homework": "Using two methods to complete:\nhttps://cses.fi/problemset/task/1623\n\n(TODO:Backtracking+Greedy Algorithms+Dynamic Programming (Concepts) & DP Applications)"
+    "homework": "Using two methods to complete:\nhttps://cses.fi/problemset/task/1623\n"
   },
   {
     "weekid": 9,
-    "week_title": "Week 9: backtracking",
+    "week_title": "Week 9: Complete search: Backtracking and search with memoization",
+    "status": "completed",
+    "hours": 1.5,
+    "session_time": "2025-10-02T22:00",
+    "summary": "Backtracking on 2D-grid search:\n8-queens problem:\nhttps://cses.fi/problemset/task/1624\n\n",
+    "homework": "1. https://cses.fi/problemset/task/1624\n2. https://cses.fi/problemset/task/3399\n"
+  },
+  {
+    "weekid": 10,
+    "week_title": "Week 10: (TODO:Greedy Algorithms+Dynamic Programming (Concepts) & DP Applications)",
     "status": "pending",
     "hours": 1.5,
-    "session_time": "2025-09-27T14:00",
+    "session_time": "2025-10-04T06:00",
     "summary": "",
     "homework": ""
   }
